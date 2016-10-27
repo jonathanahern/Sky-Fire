@@ -14,11 +14,11 @@ public class CameraPivotBehavior : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (Input.GetKeyDown(KeyCode.Q))
+        if (Input.GetKeyDown(KeyCode.Z))
         {
             turnPos -= 45;
         }
-        else if (Input.GetKeyDown(KeyCode.E))
+        else if (Input.GetKeyDown(KeyCode.X))
         {
             turnPos += 45;
         }
