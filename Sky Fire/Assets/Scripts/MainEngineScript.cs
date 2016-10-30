@@ -23,11 +23,11 @@ public class MainEngineScript : MonoBehaviour {
 
         var delta = Input.GetAxis("Mouse ScrollWheel");
 
-        if (delta > 0f)
+        if (delta > 0f || Input.GetKeyDown(KeyCode.UpArrow))
         {
             mainEngineFactor += .05f;
         }
-        else if (delta < 0f)
+        else if (delta < 0f || Input.GetKeyDown(KeyCode.DownArrow))
         {
             mainEngineFactor -= .05f;
         }
@@ -51,7 +51,7 @@ public class MainEngineScript : MonoBehaviour {
 
     void FixedUpdate ()
     {
-        Debug.Log(Vector3.Magnitude(myRB.velocity));
+        //Debug.Log(Vector3.Magnitude(myRB.velocity));
         if (mEFactorApplied > 0)
             myPS1.Emit((int) (20 * mEFactorApplied));
         else if (mEFactorApplied < 0)
