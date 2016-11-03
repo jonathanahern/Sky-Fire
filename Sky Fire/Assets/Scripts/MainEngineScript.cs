@@ -42,12 +42,12 @@ public class MainEngineScript : MonoBehaviour {
         }
 
         mEFactorApplied = Mathf.Lerp(mEFactorApplied, mainEngineFactor, .05f);
-        myRB.AddForce(transform.forward * mEFactorApplied * boostFactor);
+        myRB.AddForce(transform.forward * (mEFactorApplied) * boostFactor);
         if (Vector3.Magnitude(myRB.velocity) > 10)
         {
             myRB.velocity = myRB.velocity.normalized * 10;
         }
-	}
+    }
 
     void FixedUpdate ()
     {

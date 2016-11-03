@@ -9,7 +9,7 @@ public class FollowTracker : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 
-        theList = transform.root.gameObject.GetComponent<RigidBodyBehavior>().myPredictions;
+        theList = transform.root.gameObject.GetComponent<RigidBodyBehavior>().deadReckoning;
 
 	}
 	

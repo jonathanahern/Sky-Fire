@@ -5,7 +5,7 @@ public class RigidBodyBehavior : MonoBehaviour {
 
     Rigidbody myRB;
 
-    public static int secondsOfPrediction;
+    //static int secondsOfPrediction = 10;
 
     private Vector3 myAngVel;
     public Vector3 myAngVelPublic;
@@ -13,9 +13,6 @@ public class RigidBodyBehavior : MonoBehaviour {
     private Vector3 myTorqueInst;
     private Vector3 myTorqueSmoothPass1;
     public Vector3 myTorquePublic;
-
-   
-
 
     private Vector3 myVel;
     public Vector3 myVelPublic;
@@ -26,19 +23,17 @@ public class RigidBodyBehavior : MonoBehaviour {
 
     public float smoothRate;
 
-    public Vector3[] myPredictions = new Vector3[secondsOfPrediction + 1];
-    //public GameObject pt0;
-    //public GameObject pt1;
-    //public GameObject pt2;
-    //public GameObject pt3;
+    public Vector3[] deadReckoning = new Vector3[11];
+
+    public float dRTimer;
 
 	// Use this for initialization
 	void Start () {
 
         myRB = GetComponent<Rigidbody>();
-        for (int i = 0; i < myPredictions.Length; i++)
+        for (int i = 0; i < deadReckoning.Length; i++)
         {
-            myPredictions[i] = Vector3.zero;
+            deadReckoning[i] = Vector3.zero;
         }
 
 	}
@@ -51,6 +46,9 @@ public class RigidBodyBehavior : MonoBehaviour {
     }
 
     void FixedUpdate () {
+
+        dRTimer += Time.fixedDeltaTime;
+        dRTimer %= 1;
 
         myAngVelOld = myAngVel;
         myAngVel = myRB.angularVelocity;
@@ -70,12 +68,13 @@ public class RigidBodyBehavior : MonoBehaviour {
         myVelPublic = new Vector3(Mathf.Round(myVel.x * 100) / 100, Mathf.Round(myVel.y * 100) / 100, Mathf.Round(myVel.z * 100) / 100);
 
 
-        for (int i = 0; i < myPredictions.Length; i++)
+        for (int i = 0; i < deadReckoning.Length; i++)
         {
-            Quaternion myAngVelApplied = Quaternion.Euler(myAngVel * i);
-            Quaternion myAngAccelApplied = Quaternion.Euler(myTorqueSmoothPass1 * i * i * 0.5f);
+            float timeMod = (float)i - dRTimer;
+            Quaternion myAngVelApplied = Quaternion.Euler(myAngVel * timeMod);
+            Quaternion myAngAccelApplied = Quaternion.Euler(myTorqueSmoothPass1 * timeMod * timeMod * 0.5f);
 
-            myPredictions[i] = transform.position + (myAngVelApplied * (myVel * i)) + (myAngAccelApplied * (myAccelSmoothPass1 * i * i * 0.5f));
+            deadReckoning[i] = transform.position + (myAngVelApplied * (myVel * timeMod)) + (myAngAccelApplied * (myAccelSmoothPass1 * timeMod * timeMod * 0.5f));
         }
 
     }
