@@ -8,27 +8,32 @@ public class RigidBodyBehavior : MonoBehaviour {
     //static int secondsOfPrediction = 10;
 
     private Vector3 myAngVel;
-    public Vector3 myAngVelPublic;
+    //public Vector3 myAngVelPublic;
     private Vector3 myAngVelOld;
-    private Vector3 myTorqueInst;
-    private Vector3 myTorqueSmoothPass1;
-    public Vector3 myTorquePublic;
+    private Vector3 myAngVelOldOld;
+    private Vector3 myAngAccelInst;
+    //public Vector3 myAngAccelPublic;
 
     private Vector3 myVel;
-    public Vector3 myVelPublic;
+    //public Vector3 myVelPublic;
     private Vector3 myVelOld;
+    private Vector3 myVelOldOld;
     private Vector3 myAccelInst;
-    private Vector3 myAccelSmoothPass1;
-    public Vector3 myAccelPublic;
+    //public Vector3 myAccelPublic;
+
+    private Vector3 myAccelOT;
 
     public float smoothRate;
 
     public Vector3[] deadReckoning = new Vector3[11];
+    public Vector3[] dRVel = new Vector3[11];
+    public Vector3[] dRAccel = new Vector3[11];
 
-    public float dRTimer;
+    Quaternion myAngVelApplied;
+    Quaternion myAngAccelApplied;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
 
         myRB = GetComponent<Rigidbody>();
         for (int i = 0; i < deadReckoning.Length; i++)
@@ -38,44 +43,43 @@ public class RigidBodyBehavior : MonoBehaviour {
 
 	}
 	
-	// Update is called once per frame
-    void Update()
+    void FixedUpdate()
     {
-        myTorqueSmoothPass1 = Vector3.Lerp(myTorqueSmoothPass1, myTorqueInst, smoothRate);
-        myAccelSmoothPass1 = Vector3.Lerp(myAccelSmoothPass1, myAccelInst, smoothRate);
-    }
-
-    void FixedUpdate () {
-
-        dRTimer += Time.fixedDeltaTime;
-        dRTimer %= 1;
-
+        myAngVelOldOld = myAngVelOld;
         myAngVelOld = myAngVel;
-        myAngVel = myRB.angularVelocity;
+        myAngVel = myRB.angularVelocity * Mathf.Rad2Deg;
 
-        myTorqueInst = (myAngVel - myAngVelOld) / Time.fixedDeltaTime;
+        myAngAccelInst = (myAngVel - myAngVelOldOld) / (2* (Time.fixedDeltaTime));
 
-        myTorquePublic = new Vector3(Mathf.Round(myTorqueSmoothPass1.x * Mathf.Rad2Deg * 100) / 100, Mathf.Round(myTorqueSmoothPass1.y * Mathf.Rad2Deg * 100) / 100, Mathf.Round(myTorqueSmoothPass1.z * Mathf.Rad2Deg * 100) / 100);
-        myAngVelPublic = new Vector3(Mathf.Round(myAngVel.x * Mathf.Rad2Deg * 100) / 100, Mathf.Round(myAngVel.y * Mathf.Rad2Deg * 100) / 100, Mathf.Round(myAngVel.z * Mathf.Rad2Deg * 100) / 100);
+        //myAngAccelPublic = new Vector3(Mathf.Round(myAngAccelInst.x * 100) / 100, Mathf.Round(myAngAccelInst.y * 100) / 100, Mathf.Round(myAngAccelInst.z * 100) / 100);
+        //myAngVelPublic = new Vector3(Mathf.Round(myAngVel.x * 100) / 100, Mathf.Round(myAngVel.y * 100) / 100, Mathf.Round(myAngVel.z * 100) / 100);
 
-
+        myVelOldOld = myVelOld;
         myVelOld = myVel;
         myVel = myRB.velocity;
 
-        myAccelInst = (myVel - myVelOld) / Time.fixedDeltaTime;
+        myAccelInst = (myVel - myVelOldOld) / (2 * (Time.fixedDeltaTime));
+        myAccelOT = Vector3.Lerp(myAccelOT, myAccelInst, .01f);
+        Debug.Log(Vector3.Magnitude(myAccelOT));
 
-        myAccelPublic = new Vector3(Mathf.Round(myAccelSmoothPass1.x * 100) / 100, Mathf.Round(myAccelSmoothPass1.y * 100) / 100, Mathf.Round(myAccelSmoothPass1.z * 100) / 100);
-        myVelPublic = new Vector3(Mathf.Round(myVel.x * 100) / 100, Mathf.Round(myVel.y * 100) / 100, Mathf.Round(myVel.z * 100) / 100);
+        //myAccelPublic = new Vector3(Mathf.Round(myAccelInst.x * 100) / 100, Mathf.Round(myAccelInst.y * 100) / 100, Mathf.Round(myAccelInst.z * 100) / 100);
+        //myVelPublic = new Vector3(Mathf.Round(myVel.x * 100) / 100, Mathf.Round(myVel.y * 100) / 100, Mathf.Round(myVel.z * 100) / 100);
 
+        deadReckoning[0] = transform.position;
+        dRVel[0] = myVel;
+        dRAccel[0] = myAccelInst;
 
-        for (int i = 0; i < deadReckoning.Length; i++)
+        myAngVelApplied = Quaternion.Euler(myAngVel);
+        myAngAccelApplied = Quaternion.Euler(myAngAccelInst * 0.5f);
+
+        Debug.Log(myAngVelApplied);
+
+        for (int i = 1; i < deadReckoning.Length; i++)
         {
-            float timeMod = (float)i - dRTimer;
-            Quaternion myAngVelApplied = Quaternion.Euler(myAngVel * timeMod);
-            Quaternion myAngAccelApplied = Quaternion.Euler(myTorqueSmoothPass1 * timeMod * timeMod * 0.5f);
+            dRVel[i] = dRVel[i - 1] + dRAccel[i - 1];
+            dRAccel[i] = myAngAccelApplied * (myAngVelApplied * dRAccel[i - 1]);
 
-            deadReckoning[i] = transform.position + (myAngVelApplied * (myVel * timeMod)) + (myAngAccelApplied * (myAccelSmoothPass1 * timeMod * timeMod * 0.5f));
+            deadReckoning[i] = deadReckoning[i - 1] + myAccelInst;
         }
-
     }
 }

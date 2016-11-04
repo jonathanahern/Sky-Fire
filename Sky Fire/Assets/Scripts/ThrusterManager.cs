@@ -12,6 +12,13 @@ public class ThrusterManager : MonoBehaviour {
 	public ThrusterScript FwdStbdTop;
 	public ThrusterScript FwdPortTop;
 
+    private Rigidbody myRB;
+
+    void Start()
+    {
+        myRB = transform.root.gameObject.GetComponent<Rigidbody>();
+    }
+
 	public void AftTop () {
 		if (AftStbdTop.onOff != AftPortTop.onOff) {
 				AftPortTop.TurnOnFunction ();
@@ -84,5 +91,17 @@ public class ThrusterManager : MonoBehaviour {
 			FwdStbdBot.OnOffFunction ();
 		}
 	}
+
+    void Update ()
+    {
+        if (AftPortTop.onOff || AftStbdTop.onOff || AftPortBot.onOff || AftStbdBot.onOff || FwdStbdBot.onOff || FwdPortBot.onOff || FwdStbdTop.onOff || FwdPortTop.onOff)
+        {
+            myRB.angularDrag = .1f;
+        }
+        else
+        {
+            myRB.angularDrag = 0;
+        }
+    }
 
 }

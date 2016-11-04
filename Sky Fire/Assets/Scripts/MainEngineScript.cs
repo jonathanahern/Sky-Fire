@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class MainEngineScript : MonoBehaviour {
 
@@ -11,6 +12,8 @@ public class MainEngineScript : MonoBehaviour {
     private Rigidbody myRB;
     public ParticleSystem myPS1;
     public ParticleSystem myPS2;
+
+    public RectTransform myMPMeter;
 
 	// Use this for initialization
 	void Start () {
@@ -43,10 +46,9 @@ public class MainEngineScript : MonoBehaviour {
 
         mEFactorApplied = Mathf.Lerp(mEFactorApplied, mainEngineFactor, .05f);
         myRB.AddForce(transform.forward * (mEFactorApplied) * boostFactor);
-        if (Vector3.Magnitude(myRB.velocity) > 10)
-        {
-            myRB.velocity = myRB.velocity.normalized * 10;
-        }
+        myRB.drag = Mathf.Lerp(0, .2f, (Vector3.Magnitude(myRB.velocity) - 5)  / 5);
+
+        myMPMeter.localScale = new Vector3(.5f, mainEngineFactor * .5f, 1);
     }
 
     void FixedUpdate ()
