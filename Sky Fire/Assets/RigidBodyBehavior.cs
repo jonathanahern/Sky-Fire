@@ -7,12 +7,17 @@ public class RigidBodyBehavior : MonoBehaviour {
 
     //static int secondsOfPrediction = 10;
 
+    public float kVal;
+    public float dKVal;
+
     private Vector3 myAngVel;
     //public Vector3 myAngVelPublic;
     private Vector3 myAngVelOld;
     private Vector3 myAngVelOldOld;
     private Vector3 myAngAccelInst;
-    //public Vector3 myAngAccelPublic;
+    public Vector3 myAngAccelPublic;
+
+    public Vector3 myAvgAngAccel;
 
     private Vector3 myVel;
     //public Vector3 myVelPublic;
@@ -21,16 +26,18 @@ public class RigidBodyBehavior : MonoBehaviour {
     private Vector3 myAccelInst;
     //public Vector3 myAccelPublic;
 
-    private Vector3 myAccelOT;
-
-    public float smoothRate;
+    public Vector3 myAvgAccel;
 
     public Vector3[] deadReckoning = new Vector3[11];
     public Vector3[] dRVel = new Vector3[11];
     public Vector3[] dRAccel = new Vector3[11];
+    public Vector3[] dRAngVel = new Vector3[11];
 
     Quaternion myAngVelApplied;
     Quaternion myAngAccelApplied;
+    Quaternion myAngNewt;
+
+    private float dRTimer;
 
     // Use this for initialization
     void Start () {
@@ -42,44 +49,52 @@ public class RigidBodyBehavior : MonoBehaviour {
         }
 
 	}
+
+    void Update()
+    {
+        myAvgAccel = Vector3.Lerp(myAvgAccel, myAccelInst, .005f);
+        myAvgAngAccel = Vector3.Lerp(myAvgAngAccel, myAngAccelInst, .005f);
+    }
 	
     void FixedUpdate()
     {
+        dRTimer += Time.fixedDeltaTime;
+        dRTimer %= 1;
+
         myAngVelOldOld = myAngVelOld;
         myAngVelOld = myAngVel;
         myAngVel = myRB.angularVelocity * Mathf.Rad2Deg;
 
-        myAngAccelInst = (myAngVel - myAngVelOldOld) / (2* (Time.fixedDeltaTime));
+        myAngAccelInst = (myAngVel - myAngVelOld) / Time.fixedDeltaTime;
 
-        //myAngAccelPublic = new Vector3(Mathf.Round(myAngAccelInst.x * 100) / 100, Mathf.Round(myAngAccelInst.y * 100) / 100, Mathf.Round(myAngAccelInst.z * 100) / 100);
+        myAngAccelPublic = new Vector3(Mathf.Round(myAngAccelInst.x * 100) / 100, Mathf.Round(myAngAccelInst.y * 100) / 100, Mathf.Round(myAngAccelInst.z * 100) / 100);
         //myAngVelPublic = new Vector3(Mathf.Round(myAngVel.x * 100) / 100, Mathf.Round(myAngVel.y * 100) / 100, Mathf.Round(myAngVel.z * 100) / 100);
 
         myVelOldOld = myVelOld;
         myVelOld = myVel;
         myVel = myRB.velocity;
 
-        myAccelInst = (myVel - myVelOldOld) / (2 * (Time.fixedDeltaTime));
-        myAccelOT = Vector3.Lerp(myAccelOT, myAccelInst, .01f);
-        Debug.Log(Vector3.Magnitude(myAccelOT));
+        myAccelInst = (myVel - myVelOld) / Time.fixedDeltaTime;
+        //Debug.Log(myAccelInst);
 
         //myAccelPublic = new Vector3(Mathf.Round(myAccelInst.x * 100) / 100, Mathf.Round(myAccelInst.y * 100) / 100, Mathf.Round(myAccelInst.z * 100) / 100);
         //myVelPublic = new Vector3(Mathf.Round(myVel.x * 100) / 100, Mathf.Round(myVel.y * 100) / 100, Mathf.Round(myVel.z * 100) / 100);
 
         deadReckoning[0] = transform.position;
         dRVel[0] = myVel;
-        dRAccel[0] = myAccelInst;
+        dRAccel[0] = myAvgAccel;
+        dRAngVel[0] = myAngVel;
 
-        myAngVelApplied = Quaternion.Euler(myAngVel);
-        myAngAccelApplied = Quaternion.Euler(myAngAccelInst * 0.5f);
-
-        Debug.Log(myAngVelApplied);
+        myAngAccelApplied = Quaternion.Euler(myAvgAngAccel);
 
         for (int i = 1; i < deadReckoning.Length; i++)
         {
-            dRVel[i] = dRVel[i - 1] + dRAccel[i - 1];
-            dRAccel[i] = myAngAccelApplied * (myAngVelApplied * dRAccel[i - 1]);
+            dRAngVel[i] = myAngAccelApplied * dRAngVel[i - 1];
+            dRAccel[i] = myAngAccelApplied * (Quaternion.Euler(dRAngVel[i] * (kVal + (dKVal * i))) * dRAccel[i - 1]);
 
-            deadReckoning[i] = deadReckoning[i - 1] + myAccelInst;
+            dRVel[i] = dRVel[i - 1] + dRAccel[i];
+
+            deadReckoning[i] = deadReckoning[i - 1] + dRVel[i] + (dRAccel[i] * .5f);
         }
     }
 }
