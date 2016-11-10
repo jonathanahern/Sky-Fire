@@ -86,6 +86,24 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         }
     }
 
+    void Update ()
+    {
+
+        if (Input.GetKey(KeyCode.M))
+        {
+            GetComponent<MainEngineScript>().enabled = false;
+            transform.Find("ThrusterBank").gameObject.SetActive(false);
+            GetComponent<Rigidbody>().drag = 1000;
+            GetComponent<Rigidbody>().angularDrag = 1000;
+            Debug.Log("M");
+        }
+        else
+        {
+            GetComponent<MainEngineScript>().enabled = true;
+            transform.Find("ThrusterBank").gameObject.SetActive(true);
+        }
+    }
+
 
     // While alive - state machine
     IEnumerator Alive()
