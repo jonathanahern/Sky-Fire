@@ -8,7 +8,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
     private bool isAlive = true;
     public Vector3 netPos;
-    public Vector3 netRot;
+    public Quaternion netRot;
     public Vector3 netVel;
     public Vector3 netAccel;
     public Vector3 netAngVel;
@@ -22,17 +22,12 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
     public Vector3 ToSendAccel;
     public Vector3 ToSendAngVel;
     public Vector3 ToSendAngAccel;
-    public double xmitTime;
 
     public Rigidbody myRB;
 
     void Awake()
     {
         myRB = GetComponent<Rigidbody>();
-    }
-
-    void Start()
-    {
 
         if (photonView.isMine)
         {
@@ -59,12 +54,18 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         }
     }
 
+    void Start()
+    {
+
+        
+    }
+
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.isWriting)
         {
             stream.SendNext(myRB.position);
-            stream.SendNext(myRB.rotation);
+            stream.SendNext(transform.rotation);
             stream.SendNext(ToSendVel);
             stream.SendNext(ToSendAccel);
             stream.SendNext(ToSendAngVel);
@@ -74,12 +75,12 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         else
         {
             netPos = (Vector3)stream.ReceiveNext();
-            netRot = (Vector3)stream.ReceiveNext();
+            netRot = (Quaternion)stream.ReceiveNext();
             netVel = (Vector3)stream.ReceiveNext();
             netAccel = (Vector3)stream.ReceiveNext();
             netAngVel = (Vector3)stream.ReceiveNext();
             netAngAccel = (Vector3)stream.ReceiveNext();
-            recTime = (float)stream.ReceiveNext();
+            recTime = (double)stream.ReceiveNext();
 
             tDelta = PhotonNetwork.time - recTime;
         }
@@ -94,8 +95,9 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
             Vector3 newPos = GetComponent<Prediction>().PredictPos(netPos, netVel, netAccel, netAngVel, netAngAccel, tDelta);
             transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * smoother);
 
-            Vector3 newRot = GetComponent<Prediction>().PredictRot(netRot, netAngVel, netAngAccel, tDelta);
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(newRot), Time.deltaTime * smoother);
+            //Vector3 newRot = GetComponent<Prediction>().PredictRot(netRot, netAngVel, netAngAccel, tDelta);
+            transform.rotation = Quaternion.Slerp(transform.rotation, netRot, Time.deltaTime * smoother);
+            //transform.rotation = netRot;
 
             yield return null;
         }

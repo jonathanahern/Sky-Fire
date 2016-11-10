@@ -4,8 +4,11 @@ using System.Collections;
 public class UnChild : MonoBehaviour {
 
 	// Use this for initialization
-	void Start () {
-        transform.parent = null;
+	void Awake () {
+        if (transform.root.name == "Me")
+            transform.parent = null;
+        else
+            Destroy(this.gameObject);
 	}
 	
 	// Update is called once per frame

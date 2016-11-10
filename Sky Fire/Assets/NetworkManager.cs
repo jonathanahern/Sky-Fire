@@ -23,7 +23,7 @@ public class NetworkManager : MonoBehaviour
 
     void OnJoinedRoom()
     {
-        PhotonNetwork.Instantiate(playerPrefab, Vector3.zero, Quaternion.identity, 0);
+        PhotonNetwork.Instantiate(playerPrefab, new Vector3(Random.Range (-10, 10), 0, 0), Quaternion.identity, 0);
     }
 
 }

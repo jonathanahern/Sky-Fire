@@ -39,14 +39,20 @@ public class RigidBodyBehavior : MonoBehaviour {
 
     private float dRTimer;
 
+    public NetworkPlayerModule myNPM;
+
     // Use this for initialization
     void Start () {
+
+        myNPM = GetComponent<NetworkPlayerModule>();
 
         myRB = GetComponent<Rigidbody>();
         for (int i = 0; i < deadReckoning.Length; i++)
         {
             deadReckoning[i] = Vector3.zero;
         }
+
+
 
 	}
 
@@ -96,5 +102,11 @@ public class RigidBodyBehavior : MonoBehaviour {
 
             deadReckoning[i] = deadReckoning[i - 1] + dRVel[i] + (dRAccel[i] * .5f);
         }
+
+
+        myNPM.ToSendVel = dRVel[0];
+        myNPM.ToSendAccel = dRAccel[0];
+        myNPM.ToSendAngVel = dRAngVel[0];
+        myNPM.ToSendAngAccel = myAngAccelInst;
     }
 }
