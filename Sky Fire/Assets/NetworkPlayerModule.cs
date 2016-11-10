@@ -38,6 +38,8 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         {
             gameObject.name = "Me";
 
+            transform.Find("CameraPivot").Find("Main Camera").GetComponent<Camera>().enabled = true;
+
             GetComponent<MainEngineScript>().enabled = true;
             GetComponent<RigidBodyBehavior>().enabled = true;
             transform.Find("PositionTrackers").gameObject.SetActive(true);
@@ -46,10 +48,11 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         {
             gameObject.name = "NetworkPlayer";
 
-            transform.Find("Main Camera").GetComponent<Camera>().enabled = false;
+            transform.Find("CameraPivot").Find("Main Camera").GetComponent<Camera>().enabled = false;
 
             GetComponent<MainEngineScript>().enabled = false;
             GetComponent<RigidBodyBehavior>().enabled = false;
+
             transform.Find("PositionTrackers").gameObject.SetActive(false);
 
             StartCoroutine("Alive");
@@ -88,9 +91,11 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
     {
         while (isAlive)
         {
-            tDelta = Network
-            transform.position = Vector3.Lerp(transform.position, netPos, Time.deltaTime * smoother);
-            transform.rotation = Quaternion.Slerp(transform.rotation, netRot, Time.deltaTime * smoother);
+            Vector3 newPos = GetComponent<Prediction>().PredictPos(netPos, netVel, netAccel, netAngVel, netAngAccel, tDelta);
+            transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * smoother);
+
+            Vector3 newRot = GetComponent<Prediction>().PredictRot(netRot, netAngVel, netAngAccel, tDelta);
+            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(newRot), Time.deltaTime * smoother);
 
             yield return null;
         }
