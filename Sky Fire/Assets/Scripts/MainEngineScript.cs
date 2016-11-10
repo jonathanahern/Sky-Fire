@@ -18,7 +18,7 @@ public class MainEngineScript : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
         myRB = GetComponent<Rigidbody>();
-
+        myMPMeter = GameObject.Find("Canvas").transform.Find("Main Propulsion Meter").GetComponent<RectTransform>();
 	}
 	
 	// Update is called once per frame
