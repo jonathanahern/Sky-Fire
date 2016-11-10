@@ -43,7 +43,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         {
             gameObject.name = "NetworkPlayer";
 
-            transform.Find("CameraPivot").Find("Main Camera").GetComponent<Camera>().enabled = false;
+            Destroy(transform.Find("CameraPivot").Find("Main Camera").gameObject);
 
             GetComponent<MainEngineScript>().enabled = false;
             GetComponent<RigidBodyBehavior>().enabled = false;

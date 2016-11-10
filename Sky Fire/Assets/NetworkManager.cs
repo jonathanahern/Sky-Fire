@@ -26,4 +26,14 @@ public class NetworkManager : MonoBehaviour
         PhotonNetwork.Instantiate(playerPrefab, new Vector3(Random.Range (-10, 10), 0, 0), Quaternion.identity, 0);
     }
 
+    void Update()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            Destroy(GameObject.Find("Me"));
+            PhotonNetwork.Instantiate(playerPrefab, new Vector3(Random.Range(-10, 10), 0, 0), Quaternion.identity, 0);
+
+        }
+    }
+
 }
