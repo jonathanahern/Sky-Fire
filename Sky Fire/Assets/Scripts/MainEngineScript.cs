@@ -60,4 +60,10 @@ public class MainEngineScript : MonoBehaviour {
             myPS2.Emit((int)(20 * - mEFactorApplied));
 
     }
+
+	public void EngineShutOff () {
+	
+		mainEngineFactor = 0.0f;
+	
+	}
 }

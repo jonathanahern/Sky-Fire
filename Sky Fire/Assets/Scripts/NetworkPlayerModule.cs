@@ -25,6 +25,9 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
     public Rigidbody myRB;
 
+	public float stopTimer;
+	public bool stopper = false;
+
     void Awake()
     {
         myRB = GetComponent<Rigidbody>();
@@ -88,21 +91,34 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
     void Update ()
     {
-
-        if (Input.GetKey(KeyCode.M))
+		
+        if (stopper == true)
         {
-            GetComponent<MainEngineScript>().enabled = false;
-            transform.Find("ThrusterBank").gameObject.SetActive(false);
+           // GetComponent<MainEngineScript>().enabled = false;
+           // transform.Find("ThrusterBank").gameObject.SetActive(false);
+			stopTimer += Time.deltaTime;
             GetComponent<Rigidbody>().drag = 1000;
             GetComponent<Rigidbody>().angularDrag = 1000;
-            Debug.Log("M");
+			if (stopTimer > 2.0f) {
+				
+				stopper = false;
+				stopTimer = 0.0f;
+			
+			}
+           //Debug.Log("M");
         }
-        else
-        {
-            GetComponent<MainEngineScript>().enabled = true;
-            transform.Find("ThrusterBank").gameObject.SetActive(true);
-        }
+//        else
+//        {
+//            GetComponent<MainEngineScript>().enabled = true;
+//            transform.Find("ThrusterBank").gameObject.SetActive(true);
+//        }
     }
+
+	public void StoptoTrue () {
+	
+		stopper = true;
+	
+	}
 
 
     // While alive - state machine

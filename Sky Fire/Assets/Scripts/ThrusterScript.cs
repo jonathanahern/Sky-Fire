@@ -84,6 +84,12 @@ public class ThrusterScript : MonoBehaviour {
 		}
 	}
 
+	public void TurnOffColor () {
+	
+		myButton.color = offColor;
+	
+	}
+
 
 	void NeighborCheck (){
 	
@@ -118,5 +124,11 @@ public class ThrusterScript : MonoBehaviour {
 			doubleLeftButton.color = offColor;		
 
 		}
+	}
+
+	public void TurnOffYourDouble () {
+	
+		doubleLeftButton.color = offColor;
+	
 	}
 }
