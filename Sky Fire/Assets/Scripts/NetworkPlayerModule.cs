@@ -53,7 +53,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
             transform.Find("PositionTrackers").gameObject.SetActive(false);
 
-            StartCoroutine("Alive");
+            //StartCoroutine("Alive");
         }
     }
 
@@ -113,17 +113,9 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 //        }
     }
 
-	public void StoptoTrue () {
-	
-		stopper = true;
-	
-	}
-
-
-    // While alive - state machine
-    IEnumerator Alive()
+    void FixedUpdate()
     {
-        while (isAlive)
+        if(!photonView.isMine)
         {
             Vector3 newPos = GetComponent<Prediction>().PredictPos(netPos, netVel, netAccel, netAngVel, netAngAccel, tDelta);
             GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(transform.position, newPos, Time.deltaTime * smoother));
@@ -131,10 +123,32 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
             //Vector3 newRot = GetComponent<Prediction>().PredictRot(netRot, netAngVel, netAngAccel, tDelta);
             transform.rotation = Quaternion.Slerp(transform.rotation, netRot, Time.deltaTime * smoother);
             GetComponent<Rigidbody>().angularVelocity = netAngVel;
-
-
-
-            yield return null;
         }
+
     }
+
+	public void StoptoTrue () {
+	
+		stopper = true;
+	
+	}
+
+
+    //// While alive - state machine
+    //IEnumerator Alive()
+    //{
+    //    while (isAlive)
+    //    {
+    //        Vector3 newPos = GetComponent<Prediction>().PredictPos(netPos, netVel, netAccel, netAngVel, netAngAccel, tDelta);
+    //        GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(transform.position, newPos, Time.deltaTime * smoother));
+    //        GetComponent<Rigidbody>().velocity = netVel;
+    //        //Vector3 newRot = GetComponent<Prediction>().PredictRot(netRot, netAngVel, netAngAccel, tDelta);
+    //        transform.rotation = Quaternion.Slerp(transform.rotation, netRot, Time.deltaTime * smoother);
+    //        GetComponent<Rigidbody>().angularVelocity = netAngVel;
+
+
+
+    //        yield return null;
+    //    }
+    //}
 }
