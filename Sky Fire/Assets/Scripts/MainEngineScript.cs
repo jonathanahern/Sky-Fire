@@ -16,7 +16,7 @@ public class MainEngineScript : MonoBehaviour {
     public RectTransform myMPMeter;
 
 	// Use this for initialization
-	void Start () {
+	void Awake () {
         myRB = GetComponent<Rigidbody>();
         myMPMeter = transform.Find("Canvas").transform.Find("Main Propulsion Meter").GetComponent<RectTransform>();
 	}

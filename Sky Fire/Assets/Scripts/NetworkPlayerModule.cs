@@ -16,7 +16,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
     public double recTime;
     public double tDelta;
 
-    private float smoother = 5;
+    private float smoother = 15;
 
     public Vector3 ToSendVel;
     public Vector3 ToSendAccel;
@@ -105,7 +105,6 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 				stopTimer = 0.0f;
 			
 			}
-           //Debug.Log("M");
         }
 //        else
 //        {
@@ -127,11 +126,13 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         while (isAlive)
         {
             Vector3 newPos = GetComponent<Prediction>().PredictPos(netPos, netVel, netAccel, netAngVel, netAngAccel, tDelta);
-            transform.position = Vector3.Lerp(transform.position, newPos, Time.deltaTime * smoother);
-
+            GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(transform.position, newPos, Time.deltaTime * smoother));
+            GetComponent<Rigidbody>().velocity = netVel;
             //Vector3 newRot = GetComponent<Prediction>().PredictRot(netRot, netAngVel, netAngAccel, tDelta);
             transform.rotation = Quaternion.Slerp(transform.rotation, netRot, Time.deltaTime * smoother);
-            //transform.rotation = netRot;
+            GetComponent<Rigidbody>().angularVelocity = netAngVel;
+
+
 
             yield return null;
         }
