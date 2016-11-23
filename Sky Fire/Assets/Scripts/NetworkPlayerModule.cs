@@ -28,12 +28,22 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 	public float stopTimer;
 	public bool stopper = false;
 
+	private Transform spawnPos;
+	public GameObject shipModel;
+
+	public Material redStrip;
+	public Material blueStrip;
+	public Material greenStrip;
+	public Material yellowStrip;
+
+
     void Awake()
     {
         myRB = GetComponent<Rigidbody>();
 
         if (photonView.isMine)
         {
+
             gameObject.name = "Me";
 
             transform.Find("CameraPivot").Find("Main Camera").GetComponent<Camera>().enabled = true;
@@ -59,7 +69,36 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
     void Start()
     {
+		if (!photonView.isMine) {
+			return;
+		}
 
+		GameObject[] players;
+		players = GameObject.FindGameObjectsWithTag ("Player");
+		int playerCount = players.Length;
+
+		Material[] stripMats = shipModel.GetComponent<MeshRenderer> ().materials;
+
+		if (playerCount == 1) {
+			spawnPos = GameObject.FindWithTag("Start Pos One").transform;
+			stripMats[1] = redStrip;
+			shipModel.GetComponent<MeshRenderer>().materials = stripMats;
+
+		} else if (playerCount == 2){
+			spawnPos = GameObject.FindWithTag("Start Pos Two").transform;
+			stripMats[1] = blueStrip;
+			shipModel.GetComponent<MeshRenderer>().materials = stripMats;
+		} else if (playerCount == 3){
+			spawnPos = GameObject.FindWithTag("Start Pos Three").transform;
+			stripMats[1] = greenStrip;
+			shipModel.GetComponent<MeshRenderer>().materials = stripMats;
+		} else if (playerCount == 4){
+			spawnPos = GameObject.FindWithTag("Start Pos Four").transform;
+			stripMats[1] = yellowStrip;
+			shipModel.GetComponent<MeshRenderer>().materials = stripMats;
+		}
+
+		gameObject.transform.position = spawnPos.position;
         
     }
 
@@ -126,6 +165,14 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         }
 
     }
+
+
+	void GetYourColor () {
+
+
+
+	}
+
 
 	public void StoptoTrue () {
 	
