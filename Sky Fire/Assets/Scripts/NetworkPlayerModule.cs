@@ -28,14 +28,11 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 	public float stopTimer;
 	public bool stopper = false;
 
-	private Transform spawnPos;
-	public GameObject shipModel;
+	public GameObject shipChecker;
+	public bool shipPresent = false;
 
-	public Material redStrip;
-	public Material blueStrip;
-	public Material greenStrip;
-	public Material yellowStrip;
-
+	//1st Set in PlayerSetup
+	public Vector3 lastCheckpointPos;
 
     void Awake()
     {
@@ -69,38 +66,11 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
     void Start()
     {
-		if (!photonView.isMine) {
-			return;
-		}
 
-		GameObject[] players;
-		players = GameObject.FindGameObjectsWithTag ("Player");
-		int playerCount = players.Length;
 
-		Material[] stripMats = shipModel.GetComponent<MeshRenderer> ().materials;
-
-		if (playerCount == 1) {
-			spawnPos = GameObject.FindWithTag("Start Pos One").transform;
-			stripMats[1] = redStrip;
-			shipModel.GetComponent<MeshRenderer>().materials = stripMats;
-
-		} else if (playerCount == 2){
-			spawnPos = GameObject.FindWithTag("Start Pos Two").transform;
-			stripMats[1] = blueStrip;
-			shipModel.GetComponent<MeshRenderer>().materials = stripMats;
-		} else if (playerCount == 3){
-			spawnPos = GameObject.FindWithTag("Start Pos Three").transform;
-			stripMats[1] = greenStrip;
-			shipModel.GetComponent<MeshRenderer>().materials = stripMats;
-		} else if (playerCount == 4){
-			spawnPos = GameObject.FindWithTag("Start Pos Four").transform;
-			stripMats[1] = yellowStrip;
-			shipModel.GetComponent<MeshRenderer>().materials = stripMats;
-		}
-
-		gameObject.transform.position = spawnPos.position;
-        
     }
+
+
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -165,21 +135,40 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         }
 
     }
-
-
-	void GetYourColor () {
-
-
-
-	}
-
-
+		
 	public void StoptoTrue () {
 	
 		stopper = true;
 	
 	}
 
+
+	public void ReturnToCheckPoint () {
+
+		shipChecker.transform.localPosition = lastCheckpointPos;
+		Invoke ("Warp", .15f);
+
+	}
+
+	void Warp() {
+		Debug.Log ("WARP");
+
+		if (shipPresent == true) {
+			transform.position = new Vector3 (lastCheckpointPos.x, lastCheckpointPos.y, lastCheckpointPos.z - 125.0f);
+		} else {
+			transform.position = lastCheckpointPos;
+		}
+		stopper = true;
+		shipPresent = false;
+	}
+
+	void OnTriggerEnter(Collider other) {
+		if (other.tag == "Checkpoint") {
+
+			lastCheckpointPos = other.transform.position;
+		
+		}
+	}
 
     //// While alive - state machine
     //IEnumerator Alive()
