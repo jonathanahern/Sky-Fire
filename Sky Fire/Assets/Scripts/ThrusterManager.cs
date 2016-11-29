@@ -310,16 +310,16 @@ public class ThrusterManager : MonoBehaviour {
 
 		
 
-    void Update ()
-    {
-        if (AftPortTop.onOff || AftStbdTop.onOff || AftPortBot.onOff || AftStbdBot.onOff || FwdStbdBot.onOff || FwdPortBot.onOff || FwdStbdTop.onOff || FwdPortTop.onOff)
-        {
-            myRB.angularDrag = .1f;
-        }
-        else
-        {
-            myRB.angularDrag = 0;
-        }
-    }
+    //void Update ()
+    //{
+    //    if (AftPortTop.onOff || AftStbdTop.onOff || AftPortBot.onOff || AftStbdBot.onOff || FwdStbdBot.onOff || FwdPortBot.onOff || FwdStbdTop.onOff || FwdPortTop.onOff)
+    //    {
+    //        myRB.angularDrag = .1f;
+    //    }
+    //    else
+    //    {
+    //        myRB.angularDrag = 0;
+    //    }
+    //}
 
 }

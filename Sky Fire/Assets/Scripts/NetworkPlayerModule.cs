@@ -1,8 +1,11 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System.Collections.Generic;
 
 public class NetworkPlayerModule : Photon.MonoBehaviour
 {
+
+    public Dictionary<thrusters, ThrusterParticleController> thrusterToComponent = new Dictionary<thrusters, ThrusterParticleController>();
 
     public GameObject myCamera;
 
@@ -66,11 +69,16 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
     void Start()
     {
+        thrusterToComponent.Add(thrusters.FT1, transform.Find("ThrusterBank").Find("Thruster-FwdStbdTop").GetComponent<ThrusterParticleController>());
+        thrusterToComponent.Add(thrusters.FT2, transform.Find("ThrusterBank").Find("Thruster-FwdPortTop").GetComponent<ThrusterParticleController>());
+        thrusterToComponent.Add(thrusters.FT3, transform.Find("ThrusterBank").Find("Thruster-FwdStbdBot").GetComponent<ThrusterParticleController>());
+        thrusterToComponent.Add(thrusters.FT4, transform.Find("ThrusterBank").Find("Thruster-FwdPortBot").GetComponent<ThrusterParticleController>());
 
-
+        thrusterToComponent.Add(thrusters.AT1, transform.Find("ThrusterBank").Find("Thruster-AftStbdTop").GetComponent<ThrusterParticleController>());
+        thrusterToComponent.Add(thrusters.AT2, transform.Find("ThrusterBank").Find("Thruster-AftPortTop").GetComponent<ThrusterParticleController>());
+        thrusterToComponent.Add(thrusters.AT3, transform.Find("ThrusterBank").Find("Thruster-AftStbdBot").GetComponent<ThrusterParticleController>());
+        thrusterToComponent.Add(thrusters.AT4, transform.Find("ThrusterBank").Find("Thruster-AftPortBot").GetComponent<ThrusterParticleController>());
     }
-
-
 
     void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -136,18 +144,14 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
     }
 		
-	public void StoptoTrue () {
-	
-		stopper = true;
-	
+	public void StoptoTrue () {	
+		stopper = true;	
 	}
 
 
 	public void ReturnToCheckPoint () {
-
 		shipChecker.transform.localPosition = lastCheckpointPos;
 		Invoke ("Warp", .15f);
-
 	}
 
 	void Warp() {
@@ -162,11 +166,20 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 		shipPresent = false;
 	}
 
+    public void CallRPCManThstAnim (thrusters myThruster, bool status)
+    {
+        photonView.RPC("AnimateManeuveringThrusters", PhotonTargets.All, myThruster, status);
+    }
+
+    [PunRPC]
+    void AnimateManeuveringThrusters(thrusters myThruster, bool status)
+    {
+        thrusterToComponent[myThruster].onOff = status;
+    }
+
 	void OnTriggerEnter(Collider other) {
 		if (other.tag == "Checkpoint") {
-
-			lastCheckpointPos = other.transform.position;
-		
+			lastCheckpointPos = other.transform.position;	
 		}
 	}
 

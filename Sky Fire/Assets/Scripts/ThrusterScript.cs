@@ -5,32 +5,52 @@ using UnityEngine.UI;
 public class ThrusterScript : MonoBehaviour {
 
     public KeyCode inputKey;
+    public thrusters myThruster;
 	public Image myButton;
 	public Image doubleLeftButton;
 	public Image doubleRightButton;
 	public ThrusterScript thrusterLeft;
 	public ThrusterScript thrusterRight;
 
-    public bool onOff;
+    private bool onOffBkgd;
+    public bool onOff
+    {
+        get
+        {
+            return onOffBkgd;
+        }
+        set
+        {
+            if (value != onOffBkgd)
+            {
+                myDC.SetDrag(myThruster, value);
+                transform.root.GetComponent<NetworkPlayerModule>().CallRPCManThstAnim(myThruster, value);
+                onOffBkgd = value;
+            }
+        }
+    }
     public float forceScalar;
-    public int emitInverse;
-    private ParticleSystem myPS;
+    //public int emitInverse;
+    //private ParticleSystem myPS;
     private Rigidbody myRB;
     private SpriteRenderer mySR;
-    private int counter;
+    //private int counter;
 
 	public Color offColor;
 	public Color onColor;
 
+    private DragController myDC;
+
 	// Use this for initialization
 	void Start () {
-        myPS = GetComponentInChildren<ParticleSystem>();
-        myRB = transform.root.gameObject.GetComponent<Rigidbody>();
+        //myPS = GetComponentInChildren<ParticleSystem>();
+        myRB = transform.root.GetComponent<Rigidbody>();
         mySR = GetComponentInChildren<SpriteRenderer>();
 
 		offColor = new Color (1, 1, 1, 0.42f);
 		onColor = new Color (0, 1, 1, 0.5f);
 
+        myDC = transform.root.GetComponent<DragController>();
     }
 	
 	// Update is called once per frame
@@ -45,12 +65,12 @@ public class ThrusterScript : MonoBehaviour {
         {
             myRB.AddForceAtPosition(-transform.up * forceScalar, transform.position, ForceMode.Force);
 
-            counter++;
-            if (counter >= emitInverse)
-            {
-                myPS.Emit(1);
-                counter = 0;
-            }
+            //counter++;
+            //if (counter >= emitInverse)
+            //{
+            //    myPS.Emit(1);
+            //    counter = 0;
+            //}
 
             mySR.color = new Color(mySR.color.r, mySR.color.g, mySR.color.b, Random.Range(.2f, 1f));
         }
