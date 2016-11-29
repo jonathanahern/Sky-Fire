@@ -7,7 +7,7 @@ public class DragController : MonoBehaviour {
 
     private Dictionary<thrusters, ThrustBool> thrusterToBool = new Dictionary<thrusters, ThrustBool>();
 
-    private class ThrustBool : MonoBehaviour
+    private class ThrustBool
     {
         public string myName;
         public bool myOnOff;
@@ -69,7 +69,7 @@ public class DragController : MonoBehaviour {
             if (FT1.myOnOff || FT2.myOnOff || FT3.myOnOff || FT4.myOnOff || AT1.myOnOff || AT2.myOnOff || AT3.myOnOff || AT4.myOnOff)
                 myRB.angularDrag = opAngDrag;
             if (ME.myOnOff)
-                myRB.drag = opDrag;
+                myRB.drag = Mathf.Lerp(0, opDrag, (Vector3.Magnitude(myRB.velocity) - 5) / 5); ;
         }
         else
         {
@@ -82,7 +82,7 @@ public class DragController : MonoBehaviour {
     {
         thrusterToBool[myThruster].myOnOff = status;
 
-        Debug.Log(thrusterToBool[myThruster].myName + " is set to " + thrusterToBool[myThruster].myOnOff);
+        //Debug.Log(thrusterToBool[myThruster].myName + " is set to " + thrusterToBool[myThruster].myOnOff);
     }
 
 }

@@ -10,8 +10,38 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
     public GameObject myCamera;
 
     private bool isAlive = true;
-    public Vector3 netPos;
-    public Quaternion netRot;
+    private Vector3 netPosBkgd;
+    public Vector3 netPos
+    {
+        get
+        {
+            return netPosBkgd;
+        }
+        set
+        {
+            if (value != netPosBkgd)
+            {
+                myRB.MovePosition(myPred.PredictPos(value, netVel, netAccel, netAngVel, netAngAccel, tDelta));
+                netPosBkgd = value;
+            }
+        }
+    }
+    private Quaternion netRotBkgd;
+    public Quaternion netRot
+    {
+        get
+        {
+            return netRotBkgd;
+        }
+        set
+        {
+            if (value != netRotBkgd)
+            {
+                transform.rotation = Quaternion.Euler(myPred.PredictRot(value.eulerAngles, netAngVel, netAngAccel, tDelta));
+                netRotBkgd = value;
+            }
+        }
+    }
     public Vector3 netVel;
     public Vector3 netAccel;
     public Vector3 netAngVel;
@@ -19,7 +49,8 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
     public double recTime;
     public double tDelta;
 
-    private float smoother = 15;
+    public float linearSmoother;
+    public float angularSmoother;
 
     public Vector3 ToSendVel;
     public Vector3 ToSendAccel;
@@ -37,8 +68,11 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 	//1st Set in PlayerSetup
 	public Vector3 lastCheckpointPos;
 
+    private Prediction myPred;
+
     void Awake()
     {
+        myPred = GetComponent<Prediction>();
         myRB = GetComponent<Rigidbody>();
 
         if (photonView.isMine)
@@ -108,44 +142,50 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
     void Update ()
     {
-		
-        if (stopper == true)
-        {
-           // GetComponent<MainEngineScript>().enabled = false;
-           // transform.Find("ThrusterBank").gameObject.SetActive(false);
-			stopTimer += Time.deltaTime;
-            GetComponent<Rigidbody>().drag = 1000;
-            GetComponent<Rigidbody>().angularDrag = 1000;
-			if (stopTimer > 2.0f) {
-				
-				stopper = false;
-				stopTimer = 0.0f;
-			
-			}
-        }
-//        else
-//        {
-//            GetComponent<MainEngineScript>().enabled = true;
-//            transform.Find("ThrusterBank").gameObject.SetActive(true);
-//        }
+        GetComponent<DragController>().SetDrag(thrusters.Stop, stopper);
+
+        //if (stopper == true)
+        //{
+        //    //        // GetComponent<MainEngineScript>().enabled = false;
+        //    //        // transform.Find("ThrusterBank").gameObject.SetActive(false);
+        //    //stopTimer += Time.deltaTime;
+        //    //         GetComponent<Rigidbody>().drag = 1000;
+        //    //         GetComponent<Rigidbody>().angularDrag = 1000;
+        //    //if (stopTimer > 2.0f) {
+
+        //    //	stopper = false;
+        //    //	stopTimer = 0.0f;
+
+        //    //}
+
+        //}
+        //        else
+        //        {
+        //            GetComponent<MainEngineScript>().enabled = true;
+        //            transform.Find("ThrusterBank").gameObject.SetActive(true);
+        //        }
     }
 
     void FixedUpdate()
     {
         if(!photonView.isMine)
         {
-            Vector3 newPos = GetComponent<Prediction>().PredictPos(netPos, netVel, netAccel, netAngVel, netAngAccel, tDelta);
-            GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(transform.position, newPos, Time.deltaTime * smoother));
-            GetComponent<Rigidbody>().velocity = netVel;
-            //Vector3 newRot = GetComponent<Prediction>().PredictRot(netRot, netAngVel, netAngAccel, tDelta);
-            transform.rotation = Quaternion.Slerp(transform.rotation, netRot, Time.deltaTime * smoother);
-            GetComponent<Rigidbody>().angularVelocity = netAngVel;
+            //Vector3 newPos = GetComponent<Prediction>().PredictPos(netPos, netVel, netAccel, netAngVel, netAngAccel, tDelta);
+            //GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(transform.position, newPos, Time.deltaTime * linearSmoother));
+            ////GetComponent<Rigidbody>().velocity = netVel;
+            ////Vector3 newRot = GetComponent<Prediction>().PredictRot(netRot.eulerAngles, netAngVel, netAngAccel, tDelta);
+            //transform.rotation = Quaternion.RotateTowards(transform.rotation, netRot, angularSmoother);
+            //GetComponent<Rigidbody>().angularVelocity = netAngVel;
+
+            myRB.velocity = netVel;
+            myRB.angularVelocity = netAngVel * Mathf.Deg2Rad;
+
         }
 
     }
 		
 	public void StoptoTrue () {	
-		stopper = true;	
+		stopper = !stopper;	
 	}
 
 

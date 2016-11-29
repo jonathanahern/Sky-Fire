@@ -6,7 +6,7 @@ public class UnChild : MonoBehaviour {
 	// Use this for initialization
 	void Awake () {
         if (transform.root.name == "Me")
-            transform.parent = null;
+            transform.SetParent(null);
         else
             Destroy(this.gameObject);
 	}

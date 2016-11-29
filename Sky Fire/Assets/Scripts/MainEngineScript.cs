@@ -15,9 +15,12 @@ public class MainEngineScript : MonoBehaviour {
 
     public RectTransform myMPMeter;
 
+    private DragController myDC;
+
 	// Use this for initialization
 	void Awake () {
         myRB = GetComponent<Rigidbody>();
+        myDC = GetComponent<DragController>();
         myMPMeter = transform.Find("Canvas").transform.Find("Main Propulsion Meter").GetComponent<RectTransform>();
 	}
 	
@@ -44,10 +47,18 @@ public class MainEngineScript : MonoBehaviour {
             mainEngineFactor = -1.0f;
         }
 
+        if (Mathf.Abs(mainEngineFactor) > .02f)
+        {
+            myDC.SetDrag(thrusters.ME, true);
+        }
+        else
+        {
+            myDC.SetDrag(thrusters.ME, false);
+        }
+
         mEFactorApplied = Mathf.Lerp(mEFactorApplied, mainEngineFactor, .05f);
         myRB.AddForce(transform.forward * (mEFactorApplied) * boostFactor);
-        myRB.drag = Mathf.Lerp(0, .2f, (Vector3.Magnitude(myRB.velocity) - 5)  / 5);
-
+        
         myMPMeter.localScale = new Vector3(.5f, mainEngineFactor * .5f, 1);
     }
 
