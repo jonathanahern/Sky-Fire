@@ -65,8 +65,9 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 	public GameObject shipChecker;
 	public bool shipPresent = false;
 
-	//1st Set in PlayerSetup
+	//1st set in PlayerSetup
 	public Vector3 lastCheckpointPos;
+	public Vector3 lastCheckpointRot;
 
     private Prediction myPred;
 
@@ -195,12 +196,12 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 	}
 
 	void Warp() {
-		Debug.Log ("WARP");
 
 		if (shipPresent == true) {
-			transform.position = new Vector3 (lastCheckpointPos.x, lastCheckpointPos.y, lastCheckpointPos.z - 125.0f);
+			//transform.position = new Vector3 (lastCheckpointPos.x, lastCheckpointPos.y, lastCheckpointPos.z - 125.0f);
 		} else {
 			transform.position = lastCheckpointPos;
+			transform.eulerAngles = lastCheckpointRot;
 		}
 		stopper = true;
 		shipPresent = false;
@@ -219,7 +220,8 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
 	void OnTriggerEnter(Collider other) {
 		if (other.tag == "Checkpoint") {
-			lastCheckpointPos = other.transform.position;	
+			lastCheckpointPos = other.transform.position;
+			lastCheckpointRot = other.transform.eulerAngles;
 		}
 	}
 

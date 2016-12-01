@@ -78,6 +78,7 @@ public class PlayerSetup : Photon.MonoBehaviour {
 
 		gameObject.transform.position = spawnPos.position;
 		GetComponent<NetworkPlayerModule>().lastCheckpointPos = spawnPos.position;
+		GetComponent<NetworkPlayerModule>().lastCheckpointRot = spawnPos.transform.eulerAngles;
 	
 	}
 	

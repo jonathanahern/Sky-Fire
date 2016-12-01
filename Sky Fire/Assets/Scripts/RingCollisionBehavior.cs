@@ -24,9 +24,18 @@ public class RingCollisionBehavior : MonoBehaviour {
 	
 	}
 
-    void OnTriggerEnter ()
+	void OnTriggerEnter (Collider other)
     {
         alertSound.Play();
         burst.Emit(100);
+		GameObject dad = transform.parent.gameObject;
+		Invoke ("DestroyDad", 3.0f);
     }
+
+	void DestroyDad () {
+		
+		GameObject dad = transform.parent.gameObject;
+		Destroy (dad);
+	
+	}
 }
