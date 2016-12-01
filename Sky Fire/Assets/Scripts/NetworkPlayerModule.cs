@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.UI;
 
 public class NetworkPlayerModule : Photon.MonoBehaviour
 {
@@ -61,6 +62,10 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
 	public float stopTimer;
 	public bool stopper = false;
+	private Color offColor;
+	private Color onColor;
+	public Image stopButton;
+	private bool stopLight = false;
 
 	public GameObject shipChecker;
 	public bool shipPresent = false;
@@ -73,6 +78,9 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
     void Awake()
     {
+		offColor = new Color (1, 1, 1, 0.42f);
+		onColor = new Color (0, 1, 1, 0.5f);
+
         myPred = GetComponent<Prediction>();
         myRB = GetComponent<Rigidbody>();
 
@@ -186,7 +194,16 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
     }
 		
 	public void StoptoTrue () {	
-		stopper = !stopper;	
+		stopper = !stopper;
+		if (stopLight == false) {
+			stopButton.color = onColor;
+			stopLight = true;
+		} else {
+			stopButton.color = offColor;
+			stopLight = false;
+		}
+
+	
 	}
 
 
