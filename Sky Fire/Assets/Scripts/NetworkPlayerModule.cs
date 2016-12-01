@@ -22,8 +22,8 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         {
             if (value != netPosBkgd)
             {
-                //myRB.MovePosition(myPred.PredictPos(value, netVel, netAccel, netAngVel, netAngAccel, tDelta));
-                myRB.MovePosition(value);
+                myRB.MovePosition(myPred.PredictPos(value, netVel, netAccel, netAngVel, netAngAccel, tDelta));
+                //myRB.MovePosition(value);
                 netPosBkgd = value;
             }
         }
@@ -39,8 +39,8 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         {
             if (value != netRotBkgd)
             {
-                //transform.rotation = Quaternion.Euler(myPred.PredictRot(value.eulerAngles, netAngVel, netAngAccel, tDelta));
-                transform.rotation = value;
+                transform.rotation = Quaternion.Euler(myPred.PredictRot(value.eulerAngles, netAngVel, netAngAccel, tDelta));
+                //transform.rotation = value;
                 netRotBkgd = value;
             }
         }
