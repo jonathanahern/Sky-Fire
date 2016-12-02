@@ -22,8 +22,10 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         {
             if (value != netPosBkgd)
             {
-                myRB.MovePosition(myPred.PredictPos(value, netVel, netAccel, netAngVel, netAngAccel, tDelta));
-                //myRB.MovePosition(value);
+                if (Vector3.Distance(transform.position, value) >= 5)
+                {
+                    myRB.MovePosition(myPred.PredictPos(value, netVel, netAccel, netAngVel, netAngAccel, tDelta));
+                }
                 netPosBkgd = value;
             }
         }
@@ -181,16 +183,8 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
     {
         if(!photonView.isMine)
         {
-            //Vector3 newPos = GetComponent<Prediction>().PredictPos(netPos, netVel, netAccel, netAngVel, netAngAccel, tDelta);
-            //GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(transform.position, newPos, Time.deltaTime * linearSmoother));
-            ////GetComponent<Rigidbody>().velocity = netVel;
-            ////Vector3 newRot = GetComponent<Prediction>().PredictRot(netRot.eulerAngles, netAngVel, netAngAccel, tDelta);
-            //transform.rotation = Quaternion.RotateTowards(transform.rotation, netRot, angularSmoother);
-            //GetComponent<Rigidbody>().angularVelocity = netAngVel;
-
-            myRB.velocity = netVel;
+            myRB.velocity = myPred.CompVel(transform.position, netPos, netVel);
             myRB.angularVelocity = netAngVel * Mathf.Deg2Rad;
-
         }
 
     }
@@ -243,22 +237,4 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 			lastCheckpointRot = other.transform.eulerAngles;
 		}
 	}
-
-    //// While alive - state machine
-    //IEnumerator Alive()
-    //{
-    //    while (isAlive)
-    //    {
-    //        Vector3 newPos = GetComponent<Prediction>().PredictPos(netPos, netVel, netAccel, netAngVel, netAngAccel, tDelta);
-    //        GetComponent<Rigidbody>().MovePosition(Vector3.Lerp(transform.position, newPos, Time.deltaTime * smoother));
-    //        GetComponent<Rigidbody>().velocity = netVel;
-    //        //Vector3 newRot = GetComponent<Prediction>().PredictRot(netRot, netAngVel, netAngAccel, tDelta);
-    //        transform.rotation = Quaternion.Slerp(transform.rotation, netRot, Time.deltaTime * smoother);
-    //        GetComponent<Rigidbody>().angularVelocity = netAngVel;
-
-
-
-    //        yield return null;
-    //    }
-    //}
 }
