@@ -5,6 +5,8 @@ public class Prediction : MonoBehaviour {
 
     public float minApplyCorrectionDist;
     public float maxApplyCorrectionDist;
+    public float minApplyCorrectionAng;
+    public float maxApplyCorrectionAng;
 
     public Vector3 PredictPos (Vector3 posInput, Vector3 velInput, 
     Vector3 accelInput, Vector3 angVelInput, Vector3 angAccelInput, double time)
@@ -38,5 +40,20 @@ public class Prediction : MonoBehaviour {
         float correctionFactor = (Vector3.Distance(posCurrent, posTrue) - minApplyCorrectionDist) / (maxApplyCorrectionDist - minApplyCorrectionDist);
 
         return Vector3.Lerp(velCurrent, correctionVel, correctionFactor);
+    }
+
+    public Vector3 CompRotVel (Vector3 rotCurrent, Vector3 rotTrue, Vector3 angVelCurrent)
+    {
+        float currentAngVelContribution = 1.5f * Vector3.Magnitude(angVelCurrent);
+        float deltaAngContribution = 1.1f * Vector3.Angle(rotCurrent, rotTrue);
+
+        Vector3 correctionAngVel = Vector3.Normalize(Vector3.Cross(rotCurrent, rotTrue)) * (currentAngVelContribution + deltaAngContribution);
+
+        float correctionFactor = (Vector3.Angle(rotCurrent, rotTrue) - minApplyCorrectionAng) / (maxApplyCorrectionAng - minApplyCorrectionAng);
+
+        Debug.Log(currentAngVelContribution + " " + deltaAngContribution + " " + correctionFactor + " " + correctionAngVel);
+        //Debug.Log(Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor) + " " + correctionFactor);
+
+        return Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor);
     }
 }

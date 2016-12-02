@@ -41,8 +41,11 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         {
             if (value != netRotBkgd)
             {
-                transform.rotation = Quaternion.Euler(myPred.PredictRot(value.eulerAngles, netAngVel, netAngAccel, tDelta));
-                //transform.rotation = value;
+                if (Vector3.Angle(transform.rotation.eulerAngles, value.eulerAngles) > 15)
+                {
+                    transform.rotation = Quaternion.Euler(myPred.PredictRot(value.eulerAngles, netAngVel, netAngAccel, tDelta));
+                    Debug.Log("Reset Ang");
+                }
                 netRotBkgd = value;
             }
         }
@@ -156,27 +159,6 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
     void Update ()
     {
         GetComponent<DragController>().SetDrag(thrusters.Stop, stopper);
-
-        //if (stopper == true)
-        //{
-        //    //        // GetComponent<MainEngineScript>().enabled = false;
-        //    //        // transform.Find("ThrusterBank").gameObject.SetActive(false);
-        //    //stopTimer += Time.deltaTime;
-        //    //         GetComponent<Rigidbody>().drag = 1000;
-        //    //         GetComponent<Rigidbody>().angularDrag = 1000;
-        //    //if (stopTimer > 2.0f) {
-
-        //    //	stopper = false;
-        //    //	stopTimer = 0.0f;
-
-        //    //}
-
-        //}
-        //        else
-        //        {
-        //            GetComponent<MainEngineScript>().enabled = true;
-        //            transform.Find("ThrusterBank").gameObject.SetActive(true);
-        //        }
     }
 
     void FixedUpdate()
@@ -184,7 +166,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         if(!photonView.isMine)
         {
             myRB.velocity = myPred.CompVel(transform.position, netPos, netVel);
-            myRB.angularVelocity = netAngVel * Mathf.Deg2Rad;
+            myRB.angularVelocity = myPred.CompRotVel(transform.rotation.eulerAngles, netRot.eulerAngles, netAngVel) * Mathf.Deg2Rad;
         }
 
     }
