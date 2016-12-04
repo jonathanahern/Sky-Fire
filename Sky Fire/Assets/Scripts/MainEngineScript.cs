@@ -6,26 +6,48 @@ public class MainEngineScript : MonoBehaviour {
 
     public float mainEngineFactor;
     public float boostFactor;
+    public float maxEnergyConsumeRate;
 
-    private float mEFactorApplied;
+    private float mEFABkgd;
+    private float mEFactorApplied
+    {
+        get
+        {
+            return mEFABkgd;
+        }
+        set
+        {
+            if (value != mEFABkgd)
+            {
+                myNPM.CallRPCManMEAnim(mEFactorApplied);
+            }
+            mEFABkgd = value;
+        }
+    }
 
     private Rigidbody myRB;
-    public ParticleSystem myPS1;
-    public ParticleSystem myPS2;
 
     public RectTransform myMPMeter;
+    public RectTransform myNRGMeter;
+    public Text myNRGText;
 
     private DragController myDC;
+    private EnergyManager myEM;
+    private NetworkPlayerModule myNPM;
 
 	// Use this for initialization
 	void Awake () {
         myRB = GetComponent<Rigidbody>();
         myDC = GetComponent<DragController>();
+        myEM = GetComponent<EnergyManager>();
+        myNPM = GetComponent<NetworkPlayerModule>();
         myMPMeter = transform.Find("Canvas").transform.Find("Main Propulsion Meter").GetComponent<RectTransform>();
-	}
-	
-	// Update is called once per frame
-	void Update () {
+        myNRGMeter = transform.Find("Canvas").transform.Find("Power Meter").GetComponent<RectTransform>();
+        myNRGText = transform.Find("Canvas").transform.Find("Power Text").GetComponent<Text>();
+    }
+
+    // Update is called once per frame
+    void Update () {
 
         var delta = Input.GetAxis("Mouse ScrollWheel");
 
@@ -57,24 +79,25 @@ public class MainEngineScript : MonoBehaviour {
         }
 
         mEFactorApplied = Mathf.Lerp(mEFactorApplied, mainEngineFactor, .05f);
-        myRB.AddForce(transform.forward * (mEFactorApplied) * boostFactor);
-        
         myMPMeter.localScale = new Vector3(.5f, mainEngineFactor * .5f, 1);
     }
 
     void FixedUpdate ()
     {
-        //Debug.Log(Vector3.Magnitude(myRB.velocity));
-        if (mEFactorApplied > 0)
-            myPS1.Emit((int) (20 * mEFactorApplied));
-        else if (mEFactorApplied < 0)
-            myPS2.Emit((int)(20 * - mEFactorApplied));
-
+        myRB.AddForce(transform.forward * (mEFactorApplied) * boostFactor);
+        myEM.EnergyConsume(Mathf.Abs(mEFactorApplied) * maxEnergyConsumeRate * Time.fixedDeltaTime);
+        //Debug.Log(mEFactorApplied * maxEnergyConsumeRate * Time.fixedDeltaTime);
     }
 
 	public void EngineShutOff () {
-	
 		mainEngineFactor = 0.0f;
-	
 	}
+
+    public void DisplayEnergy (float percent)
+    {
+        myNRGMeter.localScale = new Vector3(1, percent, 1);
+        myNRGText.text = ((int)(percent * 100)).ToString() + "%";
+
+        myNRGText.color = Color.Lerp(Color.red, Color.white, percent / .2f);
+    }
 }

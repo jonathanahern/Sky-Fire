@@ -82,6 +82,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 	public Vector3 lastCheckpointRot;
 
     private Prediction myPred;
+    private MEPartController myMEPC;
 
     void Awake()
     {
@@ -90,6 +91,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
         myPred = GetComponent<Prediction>();
         myRB = GetComponent<Rigidbody>();
+        myMEPC = GetComponentInChildren<MEPartController>();
 
         if (photonView.isMine)
         {
@@ -112,8 +114,6 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
             GetComponent<RigidBodyBehavior>().enabled = false;
 
             transform.Find("PositionTrackers").gameObject.SetActive(false);
-
-            //StartCoroutine("Alive");
         }
     }
 
@@ -184,7 +184,6 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 	
 	}
 
-
 	public void ReturnToCheckPoint () {
 		shipChecker.transform.localPosition = lastCheckpointPos;
 		Invoke ("Warp", .15f);
@@ -213,7 +212,18 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         thrusterToComponent[myThruster].onOff = status;
     }
 
-	void OnTriggerEnter(Collider other) {
+    public void CallRPCManMEAnim(float factor)
+    {
+        photonView.RPC("AnimateMainEngines", PhotonTargets.All, factor);
+    }
+
+    [PunRPC]
+    void AnimateMainEngines(float factor)
+    {
+        myMEPC.setAnimFactor(factor);
+    }
+
+    void OnTriggerEnter(Collider other) {
 		if (other.tag == "Checkpoint") {
 			lastCheckpointPos = other.transform.position;
 			lastCheckpointRot = other.transform.eulerAngles;

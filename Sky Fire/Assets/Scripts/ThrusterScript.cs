@@ -11,6 +11,10 @@ public class ThrusterScript : MonoBehaviour {
 	public Image doubleRightButton;
 	public ThrusterScript thrusterLeft;
 	public ThrusterScript thrusterRight;
+    private EnergyManager myEM;
+
+    public float energyConsumeRate;
+    public float initiationCost;
 
     private bool onOffBkgd;
     public bool onOff
@@ -23,6 +27,11 @@ public class ThrusterScript : MonoBehaviour {
         {
             if (value != onOffBkgd)
             {
+                if (value)
+                {
+                    myEM.EnergyConsume(initiationCost);
+                }
+
                 myDC.SetDrag(myThruster, value);
                 transform.root.GetComponent<NetworkPlayerModule>().CallRPCManThstAnim(myThruster, value);
                 onOffBkgd = value;
@@ -51,6 +60,7 @@ public class ThrusterScript : MonoBehaviour {
 		onColor = new Color (0, 1, 1, 0.5f);
 
         myDC = transform.root.GetComponent<DragController>();
+        myEM = transform.root.GetComponent<EnergyManager>();
     }
 	
 	// Update is called once per frame
@@ -64,15 +74,8 @@ public class ThrusterScript : MonoBehaviour {
         if (onOff)
         {
             myRB.AddForceAtPosition(-transform.up * forceScalar, transform.position, ForceMode.Force);
-
-            //counter++;
-            //if (counter >= emitInverse)
-            //{
-            //    myPS.Emit(1);
-            //    counter = 0;
-            //}
-
             mySR.color = new Color(mySR.color.r, mySR.color.g, mySR.color.b, Random.Range(.2f, 1f));
+            myEM.EnergyConsume(energyConsumeRate * Time.deltaTime);
         }
         else
         {
