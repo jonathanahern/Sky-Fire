@@ -100,6 +100,9 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
             transform.Find("CameraPivot").Find("Main Camera").GetComponent<Camera>().enabled = true;
 
+			GameObject lobbyCamera = GameObject.FindGameObjectWithTag ("LobbyCamera");
+			Destroy (lobbyCamera);
+
             GetComponent<MainEngineScript>().enabled = true;
             GetComponent<RigidBodyBehavior>().enabled = true;
             transform.Find("PositionTrackers").gameObject.SetActive(true);

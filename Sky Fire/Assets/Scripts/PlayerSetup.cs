@@ -22,6 +22,8 @@ public class PlayerSetup : Photon.MonoBehaviour {
 		players = GameObject.FindGameObjectsWithTag ("Player");
 		int playerCount = players.Length;
 
+
+
 		Material[] stripMats = shipModel.GetComponent<MeshRenderer> ().materials;
 
 		if (playerCount == 1) {

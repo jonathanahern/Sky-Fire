@@ -95,7 +95,9 @@ public class MainEngineScript : MonoBehaviour {
 
     public void DisplayEnergy (float percent)
     {
-        myNRGMeter.localScale = new Vector3(1, percent, 1);
+		if (myNRGMeter != null) {
+			myNRGMeter.localScale = new Vector3 (1, percent, 1);
+		}
         myNRGText.text = ((int)(percent * 100)).ToString() + "%";
 
         myNRGText.color = Color.Lerp(Color.red, Color.white, percent / .2f);
