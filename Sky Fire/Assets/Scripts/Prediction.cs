@@ -45,6 +45,10 @@ public class Prediction : MonoBehaviour {
 
     public Vector3 CompRotVel (Vector3 rotCurrent, Vector3 rotTrue, Vector3 angVelCurrent)
     {
+        if (rotCurrent == Vector3.zero)
+        {
+            rotCurrent = new Vector3(0.01f, 0.01f, 0.01f);
+        }
         float currentAngVelContribution = 5f * Vector3.Magnitude(angVelCurrent);
         float deltaAngContribution = 5f * Vector3.Angle(rotCurrent, rotTrue);
 
