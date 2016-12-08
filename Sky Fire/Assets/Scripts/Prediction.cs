@@ -45,16 +45,16 @@ public class Prediction : MonoBehaviour {
 
     public Vector3 CompRotVel (Vector3 rotCurrent, Vector3 rotTrue, Vector3 angVelCurrent)
     {
-        float currentAngVelContribution = 1.5f * Vector3.Magnitude(angVelCurrent);
-        float deltaAngContribution = 1.1f * Vector3.Angle(rotCurrent, rotTrue);
+        float currentAngVelContribution = 5f * Vector3.Magnitude(angVelCurrent);
+        float deltaAngContribution = 5f * Vector3.Angle(rotCurrent, rotTrue);
 
         Vector3 correctionAngVel = Vector3.Normalize(Vector3.Cross(rotCurrent, rotTrue)) * (currentAngVelContribution + deltaAngContribution);
 
         float correctionFactor = (Vector3.Angle(rotCurrent, rotTrue) - minApplyCorrectionAng) / (maxApplyCorrectionAng - minApplyCorrectionAng);
         correctionFactor = Mathf.Clamp(correctionFactor, 0, 1);
 
-        //Debug.Log(currentAngVelContribution + " " + deltaAngContribution + " " + correctionFactor + " " + correctionAngVel);
-        //Debug.Log(Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor) + " " + correctionFactor);
+        Debug.Log("current Ang Vel Cont:" + currentAngVelContribution + " deltaAngCont:" + deltaAngContribution + " correctionFactor:" + correctionFactor + " correctionAngVel:" + correctionAngVel);
+        Debug.Log("Lerped vel:" + Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor));
 
         return Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor);
     }

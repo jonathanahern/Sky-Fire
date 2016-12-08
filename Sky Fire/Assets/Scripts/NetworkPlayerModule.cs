@@ -41,11 +41,11 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         {
             if (value != netRotBkgd)
             {
-                //if (Vector3.Angle(transform.rotation.eulerAngles, value.eulerAngles) > 15)
-                //{
-                //    transform.rotation = Quaternion.Euler(myPred.PredictRot(value.eulerAngles, netAngVel, netAngAccel, tDelta));
-                //    Debug.Log("Reset Ang");
-                //}
+                if (Vector3.Angle(transform.rotation.eulerAngles, value.eulerAngles) > 15)
+                {
+                    transform.rotation = Quaternion.Euler(myPred.PredictRot(value.eulerAngles, netAngVel, netAngAccel, tDelta));
+                    Debug.Log("Reset Ang");
+                }
                 netRotBkgd = value;
             }
         }
@@ -170,6 +170,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         {
             myRB.velocity = myPred.CompVel(transform.position, netPos, netVel);
             myRB.angularVelocity = myPred.CompRotVel(transform.rotation.eulerAngles, netRot.eulerAngles, netAngVel) * Mathf.Deg2Rad;
+            Debug.Log(myPred.CompRotVel(transform.rotation.eulerAngles, netRot.eulerAngles, netAngVel));
         }
 
     }
