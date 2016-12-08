@@ -35,9 +35,10 @@ public class Prediction : MonoBehaviour {
         float currentVelContribution = 1.5f * Vector3.Magnitude(velCurrent);
         float deltaPosContribution = 0.25f * Vector3.Distance(posCurrent, posTrue);
 
-        Vector3 correctionVel = Vector3.Normalize(posTrue - posCurrent) * ((1.5f * currentVelContribution) + (0.25f * deltaPosContribution));
+        Vector3 correctionVel = Vector3.Normalize(posTrue - posCurrent) * ((currentVelContribution) + (deltaPosContribution));
 
         float correctionFactor = (Vector3.Distance(posCurrent, posTrue) - minApplyCorrectionDist) / (maxApplyCorrectionDist - minApplyCorrectionDist);
+        correctionFactor = Mathf.Clamp(correctionFactor, 0, 1);
 
         return Vector3.Lerp(velCurrent, correctionVel, correctionFactor);
     }
@@ -50,8 +51,9 @@ public class Prediction : MonoBehaviour {
         Vector3 correctionAngVel = Vector3.Normalize(Vector3.Cross(rotCurrent, rotTrue)) * (currentAngVelContribution + deltaAngContribution);
 
         float correctionFactor = (Vector3.Angle(rotCurrent, rotTrue) - minApplyCorrectionAng) / (maxApplyCorrectionAng - minApplyCorrectionAng);
+        correctionFactor = Mathf.Clamp(correctionFactor, 0, 1);
 
-        Debug.Log(currentAngVelContribution + " " + deltaAngContribution + " " + correctionFactor + " " + correctionAngVel);
+        //Debug.Log(currentAngVelContribution + " " + deltaAngContribution + " " + correctionFactor + " " + correctionAngVel);
         //Debug.Log(Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor) + " " + correctionFactor);
 
         return Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor);
