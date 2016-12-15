@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class NetworkManager : MonoBehaviour
 {
@@ -15,10 +16,20 @@ public class NetworkManager : MonoBehaviour
 	public InputField username;
 	public InputField roomName;
 	public InputField roomList;
+	[SerializeField] InputField messageWindow;
+
+	GameObject player;
+	Queue<string> messages;
+	const int messageCount = 6;
+	PhotonView photonView;
 
     // Use this for initialization
     void Start()
     {
+		photonView = GetComponent<PhotonView> ();
+		messages = new Queue<string> (messageCount);
+
+
         PhotonNetwork.ConnectUsingSettings(VERSION);
 		StartCoroutine ("UpdateConnectionString");
     }
@@ -65,8 +76,27 @@ public class NetworkManager : MonoBehaviour
 		StopCoroutine ("UpdateConnectionString");
 		connectionText.text = "";
 		PhotonNetwork.Instantiate(playerPrefab, new Vector3(0, 0, -50.0f), Quaternion.identity, 0);
+		//playerPrefab.GetComponent<PlayerNetworkMover> ().SendNetworkMessage += AddMessage;
+		AddMessage ("Spawned player: " + PhotonNetwork.player.name);
 
     }
+
+	void AddMessage(string message)
+	{
+		photonView.RPC ("AddMessage_RPC", PhotonTargets.All, message);
+	}
+
+	[PunRPC]
+	void AddMessage_RPC(string message)
+	{
+		messages.Enqueue (message);
+		if(messages.Count > messageCount)
+			messages.Dequeue();
+
+		messageWindow.text = "";
+		foreach(string m in messages)
+			messageWindow.text += m + "\n";
+	}
 
     //void Update()
     //{
