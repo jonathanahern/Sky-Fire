@@ -78,6 +78,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 	private Color onColor;
 	public Image stopButton;
 	private bool stopLight = false;
+	public GameObject stopShield;
 
 	public GameObject shipChecker;
 	public bool shipPresent = false;
@@ -185,9 +186,11 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 		if (stopLight == false) {
 			stopButton.color = onColor;
 			stopLight = true;
+			stopShield.SetActive (true);
 		} else {
 			stopButton.color = offColor;
 			stopLight = false;
+			stopShield.SetActive (false);
 		}
 
 	

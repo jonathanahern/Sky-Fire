@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 public class ThrusterScript : MonoBehaviour {
 
-    public KeyCode inputKey;
+   // public KeyCode inputKey;
     public thrusters myThruster;
 	public Image myButton;
 	public Image doubleLeftButton;
@@ -66,10 +66,10 @@ public class ThrusterScript : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (Input.GetKeyDown(inputKey))
-        {
-            onOff = !onOff;
-        }
+//        if (Input.GetKeyDown(inputKey))
+//        {
+//            onOff = !onOff;
+//        }
 
         if (onOff)
         {

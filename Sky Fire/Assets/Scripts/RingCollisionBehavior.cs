@@ -17,10 +17,10 @@ public class RingCollisionBehavior : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
-            burst.Emit(100);
-        }
+//        if (Input.GetKeyDown(KeyCode.Space))
+//        {
+//            burst.Emit(100);
+//        }
 	
 	}
 
@@ -28,14 +28,14 @@ public class RingCollisionBehavior : MonoBehaviour {
     {
         alertSound.Play();
         burst.Emit(100);
-		GameObject dad = transform.parent.gameObject;
-		Invoke ("DestroyDad", 3.0f);
+		//GameObject dad = transform.parent.gameObject;
+		//Invoke ("DestroyDad", 3.0f);
     }
 
-	void DestroyDad () {
-		
-		GameObject dad = transform.parent.gameObject;
-		Destroy (dad);
-	
-	}
+//	void DestroyDad () {
+//		
+//		GameObject dad = transform.parent.gameObject;
+//		Destroy (dad);
+//	
+//	}
 }

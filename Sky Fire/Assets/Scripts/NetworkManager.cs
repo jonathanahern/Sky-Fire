@@ -17,17 +17,18 @@ public class NetworkManager : MonoBehaviour
 	public InputField roomName;
 	public InputField roomList;
 	[SerializeField] InputField messageWindow;
+	[SerializeField] InputField chatMessage;
 
-//	GameObject player;
-//	Queue<string> messages;
-//	const int messageCount = 6;
-//	PhotonView photonView;
+	GameObject player;
+	Queue<string> messages;
+	const int messageCount = 6;
+	PhotonView photonView;
 
     // Use this for initialization
     void Start()
     {
-//		photonView = GetComponent<PhotonView> ();
-//		messages = new Queue<string> (messageCount);
+		photonView = GetComponent<PhotonView> ();
+		messages = new Queue<string> (messageCount);
 
 
         PhotonNetwork.ConnectUsingSettings(VERSION);
@@ -77,26 +78,44 @@ public class NetworkManager : MonoBehaviour
 		connectionText.text = "";
 		PhotonNetwork.Instantiate(playerPrefab, new Vector3(0, 0, -50.0f), Quaternion.identity, 0);
 		//playerPrefab.GetComponent<PlayerNetworkMover> ().SendNetworkMessage += AddMessage;
-		//AddMessage ("Spawned player: " + PhotonNetwork.player.name);
+		AddMessage ("Spawned player: " + PhotonNetwork.player.name);
 
     }
 
-//	void AddMessage(string message)
-//	{
-//		photonView.RPC ("AddMessage_RPC", PhotonTargets.All, message);
-//	}
-//
-//	[PunRPC]
-//	void AddMessage_RPC(string message)
-//	{
-//		messages.Enqueue (message);
-//		if(messages.Count > messageCount)
-//			messages.Dequeue();
-//
-//		messageWindow.text = "";
-//		foreach(string m in messages)
-//			messageWindow.text += m + "\n";
-//	}
+	void AddMessage(string message)
+	{
+		photonView.RPC ("AddMessage_RPC", PhotonTargets.All, message);
+	}
+
+	[PunRPC]
+	void AddMessage_RPC(string message)
+	{
+		messages.Enqueue (message);
+		if(messages.Count > messageCount)
+			messages.Dequeue();
+
+		messageWindow.text = "";
+		foreach(string m in messages)
+			messageWindow.text += m + "\n";
+	}
+
+	void Update () {
+	
+		if (Input.GetKeyDown (KeyCode.Return)) {
+		
+			if (chatMessage.text.Length > 0) {
+
+				AddMessage (PhotonNetwork.player.name + ": " + chatMessage.text);
+				chatMessage.text = "";
+			
+			} else {
+				return;
+			}
+		
+		}
+	
+	
+	}
 
     //void Update()
     //{

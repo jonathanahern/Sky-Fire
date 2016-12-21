@@ -3,10 +3,11 @@ using System.Collections;
 
 public class MEPartController : MonoBehaviour {
 
-    private float mEFactorApplied;
+    public float mEFactorApplied;
     private ParticleSystem[] myPS = new ParticleSystem [10];
 
     private int partCounter;
+	private bool engines = true;
 
 
 	// Use this for initialization
@@ -19,11 +20,17 @@ public class MEPartController : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate () {
-        if (mEFactorApplied > 0)
-        {
-            myPS[0].Emit((int)(10 + 10 * mEFactorApplied));
-            myPS[1].Emit((int)(5 + 15 * mEFactorApplied));
-        }
+
+		if (engines == false) {
+		
+			mEFactorApplied = -.05f;
+		
+		}
+
+		if (mEFactorApplied > 0) {
+			myPS [0].Emit ((int)(10 + 10 * mEFactorApplied));
+			myPS [1].Emit ((int)(5 + 15 * mEFactorApplied));
+		}
 
         else if (mEFactorApplied < 0)
         {
@@ -39,6 +46,17 @@ public class MEPartController : MonoBehaviour {
 
     public void setAnimFactor(float factor)
     {
-        mEFactorApplied = factor;
+       mEFactorApplied = factor;
     }
+
+	public void EnginesOnOff () {
+
+		if (engines == true) {
+			engines = false;
+		} else {
+			engines = true;
+		}
+	
+	}
+
 }
