@@ -57,11 +57,12 @@ public class Prediction : MonoBehaviour {
         float correctionFactor = (Quaternion.Angle(rotCurrent, rotTrue) - minApplyCorrectionAng) / (maxApplyCorrectionAng - minApplyCorrectionAng);
         correctionFactor = Mathf.Clamp(correctionFactor, 0, 1);
 
-        Debug.Log("current Ang Vel Cont:" + currentAngVelContribution);
-        Debug.Log(" deltaAngCont:" + deltaAngContribution);
-        Debug.Log(" correctionFactor:" + correctionFactor);
-        Debug.Log(" correctionAngVel:" + correctionAngVel);
-        Debug.Log("Lerped vel:" + Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor));
+        //Debug.Log(Quaternion.Angle(rotCurrent, rotTrue));
+        //Debug.Log("current Ang Vel Cont:" + currentAngVelContribution);
+        //Debug.Log(" deltaAngCont:" + deltaAngContribution);
+        //Debug.Log(" correctionFactor:" + correctionFactor);
+        //Debug.Log(" correctionAngVel:" + correctionAngVel);
+        //Debug.Log("Lerped vel:" + Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor));
 
         return Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor);
     }
