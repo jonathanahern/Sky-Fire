@@ -175,8 +175,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         if(!photonView.isMine)
         {
             myRB.velocity = myPred.CompVel(transform.position, netPos, netVel);
-            myRB.angularVelocity = myPred.CompRotVel(transform.rotation.eulerAngles, netRot.eulerAngles, netAngVel) * Mathf.Deg2Rad;
-            Debug.Log(myPred.CompRotVel(transform.rotation.eulerAngles, netRot.eulerAngles, netAngVel));
+            myRB.angularVelocity = myPred.CompRotVel(transform.rotation, Quaternion.Euler(myPred.PredictRot(netRot.eulerAngles, netAngVel, netAngAccel, tDelta)), netAngVel) * Mathf.Deg2Rad;
         }
 
     }

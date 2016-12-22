@@ -43,21 +43,24 @@ public class Prediction : MonoBehaviour {
         return Vector3.Lerp(velCurrent, correctionVel, correctionFactor);
     }
 
-    public Vector3 CompRotVel (Vector3 rotCurrent, Vector3 rotTrue, Vector3 angVelCurrent)
+    public Vector3 CompRotVel (Quaternion rotCurrent, Quaternion rotTrue, Vector3 angVelCurrent)
     {
-        if (rotCurrent == Vector3.zero)
-        {
-            rotCurrent = new Vector3(0.01f, 0.01f, 0.01f);
-        }
-        float currentAngVelContribution = 5f * Vector3.Magnitude(angVelCurrent);
-        float deltaAngContribution = 5f * Vector3.Angle(rotCurrent, rotTrue);
+        //if (rotCurrent == Vector3.zero)
+        //{
+        //    rotCurrent = new Vector3(0.01f, 0.01f, 0.01f);
+        //}
+        float currentAngVelContribution = 1.2f * Vector3.Magnitude(angVelCurrent);
+        float deltaAngContribution = 1.1f * Quaternion.Angle(rotCurrent, rotTrue);
 
-        Vector3 correctionAngVel = Vector3.Normalize(Vector3.Cross(rotCurrent, rotTrue)) * (currentAngVelContribution + deltaAngContribution);
+        Vector3 correctionAngVel = Vector3.Normalize(Vector3.Cross(rotCurrent.eulerAngles, rotTrue.eulerAngles)) * (currentAngVelContribution + deltaAngContribution);
 
-        float correctionFactor = (Vector3.Angle(rotCurrent, rotTrue) - minApplyCorrectionAng) / (maxApplyCorrectionAng - minApplyCorrectionAng);
+        float correctionFactor = (Quaternion.Angle(rotCurrent, rotTrue) - minApplyCorrectionAng) / (maxApplyCorrectionAng - minApplyCorrectionAng);
         correctionFactor = Mathf.Clamp(correctionFactor, 0, 1);
 
-        Debug.Log("current Ang Vel Cont:" + currentAngVelContribution + " deltaAngCont:" + deltaAngContribution + " correctionFactor:" + correctionFactor + " correctionAngVel:" + correctionAngVel);
+        Debug.Log("current Ang Vel Cont:" + currentAngVelContribution);
+        Debug.Log(" deltaAngCont:" + deltaAngContribution);
+        Debug.Log(" correctionFactor:" + correctionFactor);
+        Debug.Log(" correctionAngVel:" + correctionAngVel);
         Debug.Log("Lerped vel:" + Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor));
 
         return Vector3.Lerp(angVelCurrent, correctionAngVel, correctionFactor);

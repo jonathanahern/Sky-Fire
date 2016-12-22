@@ -27,12 +27,12 @@ public class MEPartController : MonoBehaviour {
 		
 		}
 
-		if (mEFactorApplied > 0) {
+		if (mEFactorApplied > 0.2f) {
 			myPS [0].Emit ((int)(10 + 10 * mEFactorApplied));
 			myPS [1].Emit ((int)(5 + 15 * mEFactorApplied));
 		}
 
-        else if (mEFactorApplied < 0)
+        else if (mEFactorApplied < 0.2f)
         {
             partCounter++;
 
