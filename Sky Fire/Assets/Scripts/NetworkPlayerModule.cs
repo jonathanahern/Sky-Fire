@@ -180,9 +180,9 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 
     }
 		
-	public void StoptoTrue () {	
-		stopper = !stopper;
-		if (stopLight == false) {
+	public void StopOnOff () {	
+
+		if (stopper == false) {
 			stopButton.color = onColor;
 			stopLight = true;
 			stopShield.SetActive (true);
@@ -191,9 +191,8 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 			stopLight = false;
 			stopShield.SetActive (false);
 		}
-
-	
-	}
+        stopper = !stopper;
+    }
 
 	public void ReturnToCheckPoint () {
 		shipChecker.transform.localPosition = lastCheckpointPos;
