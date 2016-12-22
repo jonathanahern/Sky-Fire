@@ -29,8 +29,7 @@ public class MainEngineScript : MonoBehaviour {
     private Rigidbody myRB;
 
     public RectTransform myMPMeter;
-    public RectTransform myNRGMeter;
-    public Text myNRGText;
+
 
     private DragController myDC;
     private EnergyManager myEM;
@@ -46,8 +45,7 @@ public class MainEngineScript : MonoBehaviour {
         myEM = GetComponent<EnergyManager>();
         myNPM = GetComponent<NetworkPlayerModule>();
         myMPMeter = transform.Find("Canvas").transform.Find("Main Propulsion Meter").GetComponent<RectTransform>();
-        myNRGMeter = transform.Find("Canvas").transform.Find("Power Meter").GetComponent<RectTransform>();
-        myNRGText = transform.Find("Canvas").transform.Find("Power Text").GetComponent<Text>();
+
     }
 
     // Update is called once per frame
@@ -114,14 +112,5 @@ public class MainEngineScript : MonoBehaviour {
 		}
 	}
 
-    public void DisplayEnergy (float percent)
 
-    {
-		if (myNRGMeter != null) {
-			myNRGMeter.localScale = new Vector3 (1, percent, 1);
-		}
-        myNRGText.text = ((int)(percent * 100)).ToString() + "%";
-
-        myNRGText.color = Color.Lerp(Color.red, Color.white, percent / .2f);
-    }
 }
