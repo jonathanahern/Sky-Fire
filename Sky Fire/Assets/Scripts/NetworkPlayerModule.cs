@@ -48,8 +48,8 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 					transform.rotation = value;
 					hasRot = true;
 				} else if (Vector3.Angle(transform.rotation.eulerAngles, value.eulerAngles) > 15) {
-//                    transform.rotation = Quaternion.Euler(myPred.PredictRot(value.eulerAngles, netAngVel, netAngAccel, tDelta));
-//                    Debug.Log("Reset Ang");
+                    transform.rotation = Quaternion.Euler(myPred.PredictRot(value.eulerAngles, netAngVel, netAngAccel, tDelta));
+                    Debug.Log("Reset Ang");
                 }
                 netRotBkgd = value;
             }
