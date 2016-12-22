@@ -207,7 +207,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 			transform.position = lastCheckpointPos;
 			transform.eulerAngles = lastCheckpointRot;
 		}
-		stopper = true;
+		//stopper = true;
 		shipPresent = false;
 	}
 
