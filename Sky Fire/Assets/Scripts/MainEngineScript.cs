@@ -10,6 +10,7 @@ public class MainEngineScript : MonoBehaviour {
 
     private float mEFABkgd;
     private float mEFactorApplied
+
     {
         get
         {
@@ -28,12 +29,14 @@ public class MainEngineScript : MonoBehaviour {
     private Rigidbody myRB;
 
     public RectTransform myMPMeter;
-    public RectTransform myNRGMeter;
-    public Text myNRGText;
+
 
     private DragController myDC;
     private EnergyManager myEM;
     private NetworkPlayerModule myNPM;
+	public MEPartController myMEPC;
+
+	private bool enginesOff = false;
 
 	// Use this for initialization
 	void Awake () {
@@ -42,29 +45,34 @@ public class MainEngineScript : MonoBehaviour {
         myEM = GetComponent<EnergyManager>();
         myNPM = GetComponent<NetworkPlayerModule>();
         myMPMeter = transform.Find("Canvas").transform.Find("Main Propulsion Meter").GetComponent<RectTransform>();
-        myNRGMeter = transform.Find("Canvas").transform.Find("Power Meter").GetComponent<RectTransform>();
-        myNRGText = transform.Find("Canvas").transform.Find("Power Text").GetComponent<Text>();
+
     }
 
     // Update is called once per frame
     void Update () {
 
+//		if (enginesOff == true) {
+//		
+//			return;
+//
+//		}
+
         var delta = Input.GetAxis("Mouse ScrollWheel");
 
-        if (delta > 0f || Input.GetKeyDown(KeyCode.UpArrow))
+		if (enginesOff == false && delta > 0f || Input.GetKeyDown(KeyCode.UpArrow))
         {
             mainEngineFactor += .05f;
         }
-        else if (delta < 0f || Input.GetKeyDown(KeyCode.DownArrow))
+		else if (enginesOff == false && delta < 0f || Input.GetKeyDown(KeyCode.DownArrow))
         {
             mainEngineFactor -= .05f;
         }
 
-        if (mainEngineFactor >= 1.0f)
+		if (enginesOff == false && mainEngineFactor >= 1.0f)
         {
             mainEngineFactor = 1.0f;
         }
-        else if (mainEngineFactor <= -1.0f)
+		else if (enginesOff == false && mainEngineFactor <= -1.0f)
         {
             mainEngineFactor = -1.0f;
         }
@@ -80,6 +88,9 @@ public class MainEngineScript : MonoBehaviour {
 
         mEFactorApplied = Mathf.Lerp(mEFactorApplied, mainEngineFactor, .05f);
         myMPMeter.localScale = new Vector3(.5f, mainEngineFactor * .5f, 1);
+//
+//		Debug.Log ("me: " + mEFactorApplied);
+//		Debug.Log ("main: " + mainEngineFactor);
     }
 
     void FixedUpdate ()
@@ -90,16 +101,16 @@ public class MainEngineScript : MonoBehaviour {
     }
 
 	public void EngineShutOff () {
+		
 		mainEngineFactor = 0.0f;
+		myMEPC.EnginesOnOff();
+
+		if (enginesOff == false) {
+			enginesOff = true;
+		} else {
+			enginesOff = false;
+		}
 	}
 
-    public void DisplayEnergy (float percent)
-    {
-		if (myNRGMeter != null) {
-			myNRGMeter.localScale = new Vector3 (1, percent, 1);
-		}
-        myNRGText.text = ((int)(percent * 100)).ToString() + "%";
 
-        myNRGText.color = Color.Lerp(Color.red, Color.white, percent / .2f);
-    }
 }

@@ -78,6 +78,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 	private Color onColor;
 	public Image stopButton;
 	private bool stopLight = false;
+	public GameObject stopShield;
 
 	public GameObject shipChecker;
 	public bool shipPresent = false;
@@ -174,8 +175,7 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
         if(!photonView.isMine)
         {
             myRB.velocity = myPred.CompVel(transform.position, netPos, netVel);
-            myRB.angularVelocity = myPred.CompRotVel(transform.rotation.eulerAngles, netRot.eulerAngles, netAngVel) * Mathf.Deg2Rad;
-            Debug.Log(myPred.CompRotVel(transform.rotation.eulerAngles, netRot.eulerAngles, netAngVel));
+            myRB.angularVelocity = myPred.CompRotVel(transform.rotation, Quaternion.Euler(myPred.PredictRot(netRot.eulerAngles, netAngVel, netAngAccel, tDelta)), netAngVel) * Mathf.Deg2Rad;
         }
 
     }
@@ -185,9 +185,11 @@ public class NetworkPlayerModule : Photon.MonoBehaviour
 		if (stopLight == false) {
 			stopButton.color = onColor;
 			stopLight = true;
+			stopShield.SetActive (true);
 		} else {
 			stopButton.color = offColor;
 			stopLight = false;
+			stopShield.SetActive (false);
 		}
 
 	
